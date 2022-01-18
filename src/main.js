@@ -37,6 +37,9 @@ Vue.config.productionTip = false;
 
 // 引入相关API接口
 import API from "@/api";
+// 三级联动全局组件
+import CategorySelect from "@/components/CategorySelect";
+Vue.component(CategorySelect.name, CategorySelect);
 Vue.prototype.$API = API;
 
 new Vue({
