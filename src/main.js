@@ -40,6 +40,9 @@ import API from "@/api";
 // 三级联动全局组件
 import CategorySelect from "@/components/CategorySelect";
 Vue.component(CategorySelect.name, CategorySelect);
+// 引入全局button组件
+import HintButton from '@/components/HintButton';
+Vue.component(HintButton.name,HintButton);
 Vue.prototype.$API = API;
 
 new Vue({
