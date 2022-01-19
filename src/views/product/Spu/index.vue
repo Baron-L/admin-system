@@ -79,7 +79,11 @@
         @changeScene="changeScene"
         ref="spu"
       ></SpuForm>
-      <SkuForm v-show="scene === 2"></SkuForm>
+      <SkuForm
+        v-show="scene === 2"
+        @changeScenes="changeScenes"
+        ref="sku"
+      ></SkuForm>
     </el-card>
   </div>
 </template>
@@ -182,6 +186,15 @@ export default {
       } else {
         this.$message({ type: "error", message: "删除失败" });
       }
+    },
+    // 添加sku
+    addSku(row) {
+      this.scene = 2;
+      this.$refs.sku.getData(this.category1Id, this.category2Id, row);
+    },
+    //skuform通知父组件修改场景
+    changeScenes(scene) {
+      this.scene = scene;
     },
   },
 };
