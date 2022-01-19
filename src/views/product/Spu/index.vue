@@ -3,13 +3,19 @@
     <el-card style="margin: 20px 0">
       <CategorySelect
         @getCategoryId="getCategoryId"
-        :show="show"
+        :show="scene != 0"
       ></CategorySelect>
     </el-card>
     <el-card>
       <!-- 展示spu列表 -->
       <div v-show="scene === 0">
-        <el-button type="primary" icon="el-icon-plus">添加SPU</el-button>
+        <el-button
+          type="primary"
+          icon="el-icon-plus"
+          :disabled="!category3Id"
+          @click="addSpu"
+          >添加SPU</el-button
+        >
         <el-table style="width: 100%" border :data="records">
           <el-table-column type="index" label="序号" width="80" align="center">
           </el-table-column>
@@ -18,7 +24,7 @@
           <el-table-column prop="description" label="spu描述" width="width">
           </el-table-column>
           <el-table-column prop="prop" label="操作" width="width">
-            <template slot-scope="{}">
+            <template slot-scope="{ row }">
               <!-- 这里按钮将来用hintButton替换 -->
               <hint-button
                 type="success"
@@ -68,8 +74,12 @@
         >
         </el-pagination>
       </div>
-      <SkuForm v-show="scene === 1"></SkuForm>
-      <SpuForm v-show="scene === 2"></SpuForm>
+      <SpuForm
+        v-show="scene === 1"
+        @changeScene="changeScene"
+        ref="spu"
+      ></SpuForm>
+      <SkuForm v-show="scene === 2"></SkuForm>
     </el-card>
   </div>
 </template>
@@ -136,6 +146,42 @@ export default {
       this.limit = limit;
       //再发请求
       this.getSpuList();
+    },
+    // 添加spu
+    addSpu() {
+      this.scene = 1;
+      //通知子组件SpuForm发请求---两个
+      this.$refs.spu.addSpuData(this.category3Id);
+    },
+    // 修改spu
+    updateSpu(row) {
+      this.scene = 1;
+      //获取子组件SpuForm子组件的
+      //在父组件当中可以通过$ref获取子组件等等
+      this.$refs.spu.initSpuData(row);
+    },
+    // spuform自定义事件
+    changeScene({ scene, flag }) {
+      //flag这个形参为了区分保存按钮是添加还是修改
+      //切换结构（场景）
+      this.scene = scene;
+      //子组件通知父组件切换场景，需要再次获取SPU列表的数据进行展示
+      if (flag == "修改") {
+        this.getSpuList(this.page);
+      } else {
+        this.getSpuList();
+      }
+    },
+    // 删除spu
+    async deleteSpu(row) {
+      let result = await this.$API.spu.reqDeleteSpu(row.id);
+      if (result.code == 200) {
+        this.$message({ type: "success", message: "删除成功" });
+        //代表SPU个数大于1删除的时候停留在当前页，如果SPU个数小于1 回到上一页
+        this.getSpuList(this.records.length > 1 ? this.page : this.page - 1);
+      } else {
+        this.$message({ type: "error", message: "删除失败" });
+      }
     },
   },
 };
