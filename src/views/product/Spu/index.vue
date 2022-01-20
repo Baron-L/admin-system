@@ -85,6 +85,34 @@
         ref="sku"
       ></SkuForm>
     </el-card>
+    <el-dialog
+      :title="`${spu.spuName}`"
+      :visible.sync="dialogTableVisible"
+      :before-close="close"
+    >
+      <el-table border :data="skuList" style="width: 100%" v-loading="loading">
+        <el-table-column
+          prop="skuName"
+          label="名称"
+          width="width"
+        ></el-table-column>
+        <el-table-column
+          prop="price"
+          label="价格"
+          width="width"
+        ></el-table-column>
+        <el-table-column
+          prop="weight"
+          label="重量"
+          width="width"
+        ></el-table-column>
+        <el-table-column label="默认图片" width="width">
+          <template slot-scope="{ row }">
+            <img :src="row.skuDefaultImg" style="width: 100px; height: 100px" />
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-dialog>
   </div>
 </template>
 
@@ -195,6 +223,29 @@ export default {
     //skuform通知父组件修改场景
     changeScenes(scene) {
       this.scene = scene;
+    },
+    // 查看sku列表
+    async handler(row) {
+      //点击这个按钮的时候，对话框可见的
+      this.dialogTableVisible = true;
+      //保存spu信息
+      this.spu = row;
+      //获取sku列表的数据进行展示
+      let result = await this.$API.spu.reqSkuList(this.spu.id);
+      if (result.code === 200) {
+        this.skuList = result.data;
+        //loading隐藏
+        this.loading = false;
+      }
+    },
+    //关闭对话框的回调
+    close(done) {
+      //loading属性再次变为真
+      this.loading = true;
+      //清除sku列表的数据
+      this.skuList = [];
+      //管理对话框
+      done();
     },
   },
 };
