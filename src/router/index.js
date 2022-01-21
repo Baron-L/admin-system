@@ -88,6 +88,51 @@ export const constantRoutes = [
       },
     ],
   },
+  {
+    path: "/acl",
+    component: Layout,
+    name: "Acl",
+    meta: {
+      title: "权限管理",
+      icon: "el-icon-lock",
+    },
+    children: [
+      {
+        name: "User",
+        path: "user/list",
+        component: () => import("@/views/acl/user/list"),
+        meta: {
+          title: "用户管理",
+        },
+      },
+      {
+        name: "Role",
+        path: "role/list",
+        component: () => import("@/views/acl/role/list"),
+        meta: {
+          title: "角色管理",
+        },
+      },
+      {
+        name: "RoleAuth",
+        path: "role/auth/:id",
+        component: () => import("@/views/acl/role/roleAuth"),
+        meta: {
+          activeMenu: "/acl/role/list",
+          title: "角色授权",
+        },
+        hidden: true,
+      },
+      {
+        name: "Permission",
+        path: "permission/list",
+        component: () => import("@/views/acl/permission/list"),
+        meta: {
+          title: "菜单管理",
+        },
+      },
+    ],
+  },
   // 404 page must be placed at the end !!!
   { path: "*", redirect: "/404", hidden: true },
 ];
